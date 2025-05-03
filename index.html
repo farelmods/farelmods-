@@ -1,193 +1,259 @@
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <title>
-   IDGPT
-  </title>
-  <script src="https://cdn.tailwindcss.com">
-  </script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <style>
-   @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
-   body {
-     font-family: 'Inter', sans-serif;
-   }
-   .gradient-ring {
-     width: 120px;
-     height: 120px;
-     border-radius: 9999px;
-     background: conic-gradient(
-       from 180deg at 50% 50%, 
-       #d18de0 0deg 90deg, 
-       #b87bd9 90deg 135deg, 
-       #a46ad0 135deg 180deg, 
-       #7f4fc3 180deg 225deg, 
-       #5a3db7 225deg 270deg, 
-       #3a6ee8 270deg 360deg
-     );
-     display: flex;
-     align-items: center;
-     justify-content: center;
-   }
-   .gradient-ring-inner {
-     width: 72px;
-     height: 72px;
-     border-radius: 9999px;
-     background-color: #121212;
-   }
-   /* Chat container */
-   #chat-container {
-     flex-grow: 1;
-     overflow-y: auto;
-     padding: 0 1rem;
-     margin-bottom: 1rem;
-     width: 100%;
-     max-width: 600px;
-   }
-   .message {
-     max-width: 80%;
-     margin-bottom: 0.75rem;
-     padding: 0.5rem 0.75rem;
-     border-radius: 0.75rem;
-     font-size: 1rem;
-     line-height: 1.25rem;
-     word-wrap: break-word;
-     white-space: pre-wrap;
-   }
-   .user-message {
-     background-color: #25D366;
-     color: black;
-     margin-left: auto;
-     border-bottom-right-radius: 0.25rem;
-   }
-   .ai-message {
-     background-color: #0088cc;
-     color: white;
-     margin-right: auto;
-     border-bottom-left-radius: 0.25rem;
-   }
-  </style>
- </head>
- <body class="bg-[#121212] text-gray-300 min-h-screen flex flex-col">
-  <div class="relative flex items-center justify-center pt-6 pb-2 border-b border-gray-700">
-   <button aria-label="Back" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 text-2xl">
-    <i class="fas fa-arrow-left">
-    </i>
-   </button>
-   <h1 class="text-lg font-medium flex items-center space-x-1">
-    <span>
-     ID GPT
-    </span>
-    <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-     <path d="M12 0a12 12 0 1012 12A12.014 12.014 0 0012 0zm5.707 8.293l-6.364 6.364a1 1 0 01-1.414 0l-3.182-3.182a1 1 0 111.414-1.414l2.475 2.475 5.657-5.657a1 1 0 111.414 1.414z">
-     </path>
-    </svg>
-   </h1>
-  </div>
-  <div class="text-center mt-1 mb-6 text-sm text-gray-500">
-   dengan farel 0.0.1
-  </div>
-  <div class="flex-grow flex flex-col items-center justify-start px-6">
-   <div class="gradient-ring mb-8" role="img" aria-label="Circular gradient ring with pink and blue colors">
-    <div class="gradient-ring-inner">
-    </div>
-   </div>
-   <h2 class="text-2xl font-normal mb-8">
-    Tanya IDGPT apa saja 
-   </h2>
-   <div id="chat-container" class="w-full max-w-md overflow-y-auto">
-    <div class="flex flex-wrap justify-center gap-2 max-w-md mb-6">
-     <div class="bg-[#2a2a2a] rounded-full px-4 py-2 text-gray-400 text-sm flex items-center space-x-1">
-      <span>
-       📝
-      </span>
-      <span>
-       Saya ingin ngobrol
-      </span>
-     </div>
-     <div class="bg-[#2a2a2a] rounded-full px-4 py-2 text-gray-400 text-sm flex items-center space-x-1">
-      <span>
-       📝
-      </span>
-      <span>
-       Saya butuh bantuan untuk mengumpulkan gagasan
-      </span>
-     </div>
-     <div class="bg-[#2a2a2a] rounded-full px-4 py-2 text-gray-400 text-sm flex items-center space-x-1">
-      <span>
-       📝
-      </span>
-      <span>
-       Saya ingin menayanyakan tentang IDGPT
-      </span>
-     </div>
-    </div>
-   </div>
-  </div>
-  <form id="chat-form" class="flex items-center px-4 py-3 border-t border-gray-700 bg-[#1f1f1f] max-w-md mx-auto w-full">
-   <button aria-label="Emoji" class="text-gray-400 text-2xl mr-3" type="button">
-    <i class="far fa-smile">
-    </i>
-   </button>
-   <input autocomplete="off" id="message-input" class="flex-grow bg-[#2a2a2a] rounded-full py-2 px-4 text-gray-400 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ketik pesan" type="text" required/>
-   <button aria-label="Send" class="ml-3 bg-green-600 hover:bg-green-700 rounded-full w-12 h-12 flex items-center justify-center text-white text-2xl" type="submit">
-    <i class="fas fa-paper-plane">
-    </i>
-   </button>
-  </form>
-  <script>
- const chatContainer = document.getElementById('chat-container');
- const chatForm = document.getElementById('chat-form');
- const messageInput = document.getElementById('message-input');
-
- // Function to add message to chat container
- function addMessage(text, sender) {
-   const messageDiv = document.createElement('div');
-   messageDiv.classList.add('message');
-   if (sender === 'user') {
-     messageDiv.classList.add('user-message');
-   } else {
-     messageDiv.classList.add('ai-message');
-   }
-   messageDiv.textContent = text;
-   chatContainer.appendChild(messageDiv);
-   chatContainer.scrollTop = chatContainer.scrollHeight;
- }
-
- // Function to call your custom AI API and get response
- async function getAIResponse(message) {
-  const apiUrl = `https://api.siputzx.my.id/api/ai/llama33?prompt=Be%20a%20helpful%20assistant&text=${encodeURIComponent(message)}`;
-
-  try {
-    const response = await fetch(apiUrl);
-    const data = await response.json();
-
-    if (data.status && data.data) {
-      return data.data;
-    } else {
-      return "Maaf, AI tidak memberikan respons yang valid.";
-    }
-  } catch (error) {
-    return `Error: ${error.message}`;
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chat UI with AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+/>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #000000;
+    color: white;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
-}
+  header {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1rem 0.5rem 1rem;
+    border-bottom: 1px solid #111111;
+  }
+  header .title {
+    font-weight: 800;
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    max-width: 9.5rem;
+    color: white;
+  }
+  header .title .blue-diamond {
+    color: #00008b;
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    margin-right: 0.25rem;
+  }
+  header button {
+    margin-left: 0.75rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+  }
+  header .btn-gpt {
+    background-color: #2d2d2d;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  header .btn-code {
+    background-color: #c75a26;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 1.125rem;
+  }
+  header .btn-menu {
+    background-color: #8db92f;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 1.125rem;
+  }
+  main {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .message {
+    max-width: 75%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    word-wrap: break-word;
+  }
+  .message.user {
+    background-color: #2d2d2d;
+    align-self: flex-end;
+    color: white;
+  }
+  .message.bot {
+    background-color: #1a1a1a;
+    align-self: flex-start;
+    color: #ccc;
+  }
+  footer {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #111111;
+    background-color: #000000;
+  }
+  footer input[type="text"] {
+    flex-grow: 1;
+    background-color: #1a1a1a;
+    color: #999999;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    font-size: 1rem;
+  }
+  footer input[type="text"]::placeholder {
+    color: #666666;
+  }
+  footer input[type="text"]:focus {
+    outline: none;
+  }
+  footer button {
+    background-color: #666666;
+    color: black;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+ margin-left: 0.75rem;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+  }
+  @media (min-width: 640px) {
+    header .title {
+      font-size: 2.5rem;
+      line-height: 2.75rem;
+    }
+  }
+  /* Styles for the menu panel */
+  .menu-panel {
+    position: absolute;
+    top: 60px; /* Adjust based on header height */
+    right: 10px;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 0.5rem;
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    padding: 1rem;
+    z-index: 1000;
+  }
+  .menu-panel button {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 0.5rem 0;
+    text-align: left;
+    cursor: pointer;
+  }
+  .menu-panel button:hover {
+    background-color: #333;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="title">
+      <span class="blue-diamond">♦</span> Tempat<br />bermain
+    </div>
+    <button class="btn-gpt">GPT4.1</button>
+    <button class="btn-code">&lt;/&gt;</button>
+    <button class="btn-menu" id="menuBtn"><i class="fas fa-bars"></i></button>
+  </header>
 
- chatForm.addEventListener('submit', async (e) => {
-   e.preventDefault();
-   const userMessage = messageInput.value.trim();
-   if (!userMessage) return;
+  <div class="menu-panel" id="menuPanel">
+    <button id="profileBtn">Profil</button>
+    <button id="settingsBtn">Pengaturan</button>
+    <button id="logoutBtn">Keluar</button>
+  </div>
 
-   addMessage(userMessage, 'user');
-   messageInput.value = '';
-   messageInput.disabled = true;
+  <main id="chat">
+    <!-- Messages will appear here -->
+  </main>
 
-   const aiReply = await getAIResponse(userMessage);
-   addMessage(aiReply, 'ai');
+  <footer>
+    <input id="inputMessage" type="text" placeholder="Ketik pesan Anda..." autocomplete="off" />
+    <button id="sendBtn">MENGIRIM</button>
+  </footer>
 
-   messageInput.disabled = false;
-   messageInput.focus();
- });
+<script>
+  const chat = document.getElementById('chat');
+  const inputMessage = document.getElementById('inputMessage');
+  const sendBtn = document.getElementById('sendBtn');
+  const menuBtn = document.getElementById('menuBtn');
+  const menuPanel = document.getElementById('menuPanel');
+
+  // Function to add message to chat
+  function addMessage(text, sender) {
+    const msgDiv = document.createElement('div');
+    msgDiv.classList.add('message', sender);
+    msgDiv.textContent = text;
+    chat.appendChild(msgDiv);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  // Function to call OpenAI API (GPT-4.1)
+  async function getAIResponse(message) {
+    const apiUrl = `https://api.siputzx.my.id/api/ai/llama33?prompt=Be%20a%20helpful%20assistant&text=${encodeURIComponent(message)}`;
+
+    try {
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+
+      if (data.status && data.data) {
+        return data.data;
+      } else {
+        return "Maaf, AI tidak memberikan respons yang valid.";
+      }
+    } catch (error) {
+      return `Error: ${error.message}`;
+    }
+  }
+
+  // Handle sending message
+  async function sendMessage() {
+    const message = inputMessage.value.trim();
+    if (!message) return;
+
+    addMessage(message, 'user');
+    inputMessage.value = '';
+    inputMessage.disabled = true;
+    sendBtn.disabled = true;
+
+    addMessage('...', 'bot'); // show typing indicator
+    const typingMsg = chat.querySelector('.message.bot:last-child');
+
+    const aiResponse = await getAIResponse(message);
+
+    typingMsg.textContent = aiResponse;
+
+    inputMessage.disabled = false;
+    sendBtn.disabled = false;
+    inputMessage.focus();
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  inputMessage.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Toggle menu panel visibility
+  menuBtn.addEventListener('click', () => {
+    menuPanel.style.display = menuPanel.style.display === 'flex' ? 'none' : 'flex';
+  });
+
+  // Close menu panel when clicking outside
+  window.addEventListener('click', (event) => {
+    if (!menuPanel.contains(event.target) && event.target !== menuBtn) {
+      menuPanel.style.display = 'none';
+    }
+  });
 </script>
- </body>
+</body>
 </html>
